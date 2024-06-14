@@ -131,11 +131,17 @@
             .el-dropdown__box {
                 display: flex;
                 align-items: center;
-            }
 
-            &:active,
-            &:focus {
-                outline: none;
+
+                .el-icon {
+                    color: #999;
+                    margin-left: 10px;
+                }
+
+                &:active,
+                &:focus {
+                    outline: none;
+                }
             }
         }
 
