@@ -1,6 +1,8 @@
 <script setup>
     import { User, Lock } from '@element-plus/icons-vue'
     import { ref } from 'vue'
+    import { ElMessage } from 'element-plus';
+
     // 控制注册与登陆表单的显示，默认显示登陆
     const isRegister = ref(false)
     // 定义数据模型
@@ -43,18 +45,21 @@
     const register = async() => {
         // registerData是一个响应式对象，如果要获取值，需要.value
         let result = await userRegisterService(registerData.value);
-        if (result.code === 0) {
-            // 成功了
-            // console.log(result);
-            // console.log(result.msg);
-            // console.log(result.message);
-            alert(result.message ? result.message : '注册成功');
-            form.value.resetFields();
-        } else {
-            // 失败了
-            // console.log(result);
-            alert('注册失败：'+result.message);
-        }
+        // if (result.code === 0) {
+        //     // 成功了
+        //     // console.log(result);
+        //     // console.log(result.msg);
+        //     // console.log(result.message);
+        //     alert(result.message ? result.message : '注册成功');
+        //     form.value.resetFields();
+        // } else {
+        //     // 失败了
+        //     // console.log(result);
+        //     alert('注册失败：'+result.message);
+        // }
+        // alert('注册成功');
+        ElMessage.success('注册成功');
+        form.value.resetFields();
     }
 
     // 绑定数据，复用注册表单的数据模型
@@ -63,13 +68,15 @@
     const login = async() => {
         // 调用接口，完成登陆
         let result = await userLoginService(registerData.value);
-        if (result.code === 0) {
-            // 成功时result.message为'操作成功'，我们还是希望为'登陆成功'
-            // alert(result.message ? result.message : '登陆成功')
-            alert('登陆成功');
-        } else {
-            alert('登陆失败');
-        }
+        // if (result.code === 0) {
+        //     // 成功时result.message为'操作成功'，我们还是希望为'登陆成功'
+        //     // alert(result.message ? result.message : '登陆成功')
+        //     alert('登陆成功');
+        // } else {
+        //     alert('登陆失败');
+        // }
+        // alert('登陆成功');
+        ElMessage.success('登陆成功');
     }
 
     // 定义函数，清空数据模型的数据
