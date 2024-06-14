@@ -39,18 +39,45 @@
     const form = ref(null);
 
     // 调用后台接口，完成注册
-    import { userRegisterService } from "@/api/user.js";
+    import { userRegisterService, userLoginService } from "@/api/user.js";
     const register = async() => {
         // registerData是一个响应式对象，如果要获取值，需要.value
         let result = await userRegisterService(registerData.value);
         if (result.code === 0) {
             // 成功了
-            alert(result.msg ? result.msg : '注册成功');
+            // console.log(result);
+            // console.log(result.msg);
+            // console.log(result.message);
+            alert(result.message ? result.message : '注册成功');
             form.value.resetFields();
         } else {
             // 失败了
             // console.log(result);
             alert('注册失败：'+result.message);
+        }
+    }
+
+    // 绑定数据，复用注册表单的数据模型
+    // 表单数据校验
+    // 登陆函数
+    const login = async() => {
+        // 调用接口，完成登陆
+        let result = await userLoginService(registerData.value);
+        if (result.code === 0) {
+            // 成功时result.message为'操作成功'，我们还是希望为'登陆成功'
+            // alert(result.message ? result.message : '登陆成功')
+            alert('登陆成功');
+        } else {
+            alert('登陆失败');
+        }
+    }
+
+    // 定义函数，清空数据模型的数据
+    const clearRegisterData = () => {
+        registerData.value = {
+            username:'',
+            password:'',
+            rePassword:''
         }
     }
 
@@ -84,22 +111,22 @@
           </el-form-item>
           <el-form-item class="flex">
             <el-link type="info" :underline="false" 
-            @click="isRegister = false">
+            @click="isRegister = false; clearRegisterData()">
                 ← 返回
             </el-link>
           </el-form-item>
         </el-form>
         <!-- 登陆表单 -->
-        <el-form ref="form" size="large" autocomplete="off" v-else>
+        <el-form ref="form" size="large" autocomplete="off" v-else :model="registerData" :rules="rules">
             <el-form-item>
                 <h1>登陆</h1>
             </el-form-item>
-            <el-form-item>
-                <el-input :prefix-icon="User" placeholder="请输入用户名"></el-input>
+            <el-form-item prop="username">
+                <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="registerData.username"></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="password">
                 <el-input name="password" :prefix-icon="Lock" 
-                type="password" placeholder="请输入密码"></el-input>
+                type="password" placeholder="请输入密码" v-model="registerData.password"></el-input>
             </el-form-item>
             <el-form-item class="flex">
                 <div class="flex">
@@ -110,11 +137,11 @@
             <!-- 登录按钮 -->
             <el-form-item>
                 <el-button class="button" type="primary"
-                auto-insert-space>登陆</el-button>
+                auto-insert-space @click="login">登陆</el-button>
             </el-form-item>
             <el-form-item class="flex">
                 <el-link type="info" :underline="false"
-                @click="isRegister = true">
+                @click="isRegister = true; clearRegisterData()">
                     注册 →
                 </el-link>    
             </el-form-item>
