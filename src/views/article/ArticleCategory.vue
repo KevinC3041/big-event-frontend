@@ -28,6 +28,14 @@
             "updateTime": "2023-09-02 12:08:33"
         }
     ])
+    // 声明一个异步函数
+    import { articleCategoryListService } from '@/api/article.js'
+    const articleCategoryList = async() => {
+        let result = await articleCategoryListService();
+        categories.value = result.data;
+    }
+    articleCategoryList();
+
 </script>
 
 <template>

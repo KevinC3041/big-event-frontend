@@ -35,7 +35,7 @@
           </el-icon>
           <span>文章管理</span>
         </el-menu-item>
-        <el-sub-menu>
+        <el-sub-menu index = "1">
           <template #title>
             <el-icon>
               <UserFilled />
