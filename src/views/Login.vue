@@ -65,8 +65,10 @@
     // 绑定数据，复用注册表单的数据模型
     // 表单数据校验
     // 登陆函数
+    import { useTokenStore } from '@/stores/token.js';
     import { useRouter } from 'vue-router';
     const router = useRouter();
+    const tokenStore = useTokenStore();
     const login = async() => {
         // 调用接口，完成登陆
         let result = await userLoginService(registerData.value);
@@ -79,6 +81,8 @@
         // }
         // alert('登陆成功');
         ElMessage.success('登陆成功');
+        // 把得到的token存储到pinia中
+        tokenStore.setToken(result.data);
         // 跳转到首页，由路由完成跳转
         router.push('/');
     };
