@@ -29,7 +29,7 @@
         }
     ])
     // 声明一个异步函数
-    import { articleCategoryListService, articleCategoryAddService } from '@/api/article.js'
+    import { articleCategoryListService, articleCategoryAddService, articleCategoryUpdateService } from '@/api/article.js'
     const articleCategoryList = async() => {
         let result = await articleCategoryListService();
         categories.value = result.data;
@@ -68,15 +68,51 @@
         dialogVisible.value = false;        
     }
 
-</script>
+    // 定义变量，控制标题的展示
+    const title = ref('')
 
+    // 展示编辑弹窗
+    const showDialog = (row) => {
+        dialogVisible.value = true; title.value = '编辑分类'
+        // 数据拷贝
+        categoryModel.value.categoryName = row.categoryName;
+        categoryModel.value.categoryAlias = row.categoryAlias;
+        // 扩展id属性，将来需要传递给后台，完成分类的修改
+        categoryModel.value.id = row.id;
+    }
+
+    // 编辑分类
+    const updateCategory = async() => {
+        // 调用接口
+        let result = await articleCategoryUpdateService(categoryModel.value);
+
+        // console.log(result.message);
+        // console.log(result.message !== '操作成功')
+        ElMessage.success(result.message == '操作成功' ? '修改成功' : result.message)
+
+        // 调用获取所有分类的函数
+        articleCategoryList();
+
+        // 隐藏弹窗
+        dialogVisible.value = false;
+    }
+
+    // 定义函数，清空表单模型categoryModel的数据
+    const clearCategoryModelData = () => {
+        categoryModel.value = {
+            categoryName: '',
+            categoryAlias: ''            
+        }
+    };
+
+</script>
 <template>
     <el-card class="page-container">
         <template #header>
             <div class="header">
                 <span>文章分类</span>
                 <div class="extra">
-                    <el-button type="primary" @click="dialogVisible=true">
+                    <el-button type="primary" @click="dialogVisible=true; title='添加分类'; clearCategoryModelData();">
                         添加分类
                     </el-button>
                 </div>
@@ -88,7 +124,7 @@
           <el-table-column label="分类别名" prop="categoryAlias"></el-table-column>
           <el-table-column label="操作" width="100">
             <template #default="{ row }">
-                <el-button :icon="Edit" circle plain type="primary">
+                <el-button :icon="Edit" circle plain type="primary" @click="showDialog(row)">
                 </el-button>
                 <el-button :icon="Delete" circle plain type="danger">
                 </el-button>
@@ -100,7 +136,7 @@
         </el-table>
 
         <!-- 添加分类弹窗 -->
-        <el-dialog v-model="dialogVisible" title="添加弹层" width="30%">
+        <el-dialog v-model="dialogVisible" :title="title" width="30%">
             <el-form :model="categoryModel" :rules="rules"
             label-width="100px" style="padding-right: 30px">
                 <el-form-item label="分类名称" prop="categoryName">
@@ -117,7 +153,7 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="addCategory">确认</el-button>
+                    <el-button type="primary" @click="title=='添加分类' ? addCategory() : updateCategory()">确认</el-button>
                 </span>
 
             </template>
