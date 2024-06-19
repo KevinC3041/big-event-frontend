@@ -86,12 +86,40 @@
     }
 
     // 回显文章分类
-    import { articleCategoryListService } from '@/api/article.js'
+    import { articleCategoryListService, articleListService } from '@/api/article.js'
     const articleCategoryList = async() => {
         let result = await articleCategoryListService();
         categories.value = result.data;
     }
     articleCategoryList()
+
+    // 获取文章列表数据
+    const articleList = async () => {
+        let params = {
+            pageNum:pageNum.value,
+            pageSize:pageSize.value,
+            categoryId:categoryId.value ? categoryId.value : null,
+            state:state.value ? state.value : null
+        }
+        let result = await articleListService(params)
+
+        // 渲染视图
+        total.value = result.data.total;
+        articles.value = result.data.items;
+
+        // 处理数据，给数据模型扩展一个属性categoryName,分类名称
+        for (let i = 0; i < articles.value.length; i++) {
+            let article = articles.value[i];
+            for (let j = 0; j < categories.value.length; j++) {
+                if (article.categoryId == categories.value[j].id) {
+                    article.categoryName = categories.value[j].categoryName;
+                }
+            }
+        }
+    }
+
+    articleList();
+
 </script>
 <template>
     <el-card class = "page-container">
@@ -142,7 +170,7 @@
         <el-table-column label="文章标题"
         width="400" prop="title"></el-table-column>
         <el-table-column label="分类"
-        prop="categoryId"></el-table-column>
+        prop="categoryName"></el-table-column>
         <el-table-column label="发表时间"
         prop="createTime"></el-table-column>
         <el-table-column label="状态"
