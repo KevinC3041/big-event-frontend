@@ -29,3 +29,16 @@ export const articleCategoryDeleteService = (id) => {
 export const articleListService = (params) => {
     return request.get('/article',{params:params})
 }
+
+// 文章添加
+export const articleAddService = (articleModel) => {
+    return request.post('/article', articleModel);
+
+    // //Debug Use
+    // console.log("Here:", JSON.stringify(articleModel));
+    // return request.post('/article', 
+    // JSON.stringify(articleModel), {headers: {
+    //     'Content-Type' : 'application/json'
+    // }});
+}
+
