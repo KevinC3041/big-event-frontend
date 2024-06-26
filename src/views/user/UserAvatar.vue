@@ -2,7 +2,35 @@
   import { ref } from "vue";
   import { Plus, Upload } from "@element-plus/icons-vue";
 
-  const imageUrl = ref("");
+  const uploadRef = ref("");
+
+  import {useTokenStore} from '@/stores/token.js'
+  const tokenStore = useTokenStore();
+
+  import useUserInfoStore from '@/stores/userInfo.js'
+  const userInfoStore = useUserInfoStore();
+
+  // 用户头像地址
+  const imgUrl = ref(userInfoStore.info.userPic);
+
+  // 图片上传成功的回调函数
+  const uploadSuccess = (result) => {
+    imgUrl.value = result.data;
+  }
+
+  import { userAvatarUpdateService } from '@/api/user.js'
+  import { ElMessage } from 'element-plus'
+  // 头像修改
+  const updateAvatar = async() => {
+    // 调用接口
+    let result = await userAvatarUpdateService(imgUrl.value);
+    // console.log(result);
+    ElMessage.success(result.message === "操作成功" ? "修改成功" : result.message);
+
+    // 修改pinia中的数据
+    userInfoStore.info.userPic = imgUrl.value
+  }
+
 </script>
 
 <template>
@@ -23,20 +51,22 @@
                     on-success:设置上传成功的回调函数
                 -->
           <el-upload
+            ref="uploadRef"
             class="avatar-uploader"
             :auto-upload="true"
             :show-file-list="false"
-            action=""
+            action="/api/upload"
             name="file"
-            :headers="{}"
+            :headers="{'Authorization':tokenStore.token}"
+            :on-success="uploadSuccess"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <img v-if="imgUrl" :src="imgUrl" class="avatar" />
             <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
           </el-upload>
           <br />
           <div class="button-group">
-            <el-button type="primary" :icon="Plus" size="large">选择图片</el-button>
-            <el-button type="success" :icon="Upload" size="large">上传头像</el-button>
+            <el-button type="primary" :icon="Plus" size="large" @click="uploadRef.$el.querySelector('input').click()">选择图片</el-button>
+            <el-button type="success" :icon="Upload" size="large" @click="updateAvatar">上传头像</el-button>
           </div>
         </div>
       </el-col>
